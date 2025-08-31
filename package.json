@@ -1,0 +1,25 @@
+{
+	"name": "tts_cli",
+	"module": "src/index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"install-tools": "bash scripts/install-tools.sh",
+		"build": "bash scripts/build.sh",
+		"compress": "bash scripts/compress-safe.sh",
+		"compress:unsafe": "bash scripts/compress.sh",
+		"build:compress": "bash scripts/build.sh && bash scripts/compress-safe.sh",
+		"build:unsafe": "bash scripts/build.sh && bash scripts/compress.sh",
+		"build:all": "bash scripts/build.sh && cp dist/tts dist/tts-original && bash scripts/compress-safe.sh"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.2.2",
+		"@types/bun": "latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"edge-tts-universal": "^1.3.0"
+	}
+}
