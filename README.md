@@ -14,7 +14,6 @@
 [![CodeQL](https://github.com/phyter1/tts-cli/actions/workflows/security.yml/badge.svg?event=push&job=sast)](https://github.com/phyter1/tts-cli/security/code-scanning)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/phyter1/tts-cli/badge)](https://securityscorecards.dev/viewer/?uri=github.com/phyter1/tts-cli)
 [![Snyk Vulnerabilities](https://snyk.io/test/github/phyter1/tts-cli/badge.svg)](https://snyk.io/test/github/phyter1/tts-cli)
-[![FOSSA Status](https://app.fossa.com/api/projects/github%2Fphyter1%2Ftts-cli.svg?type=shield)](https://app.fossa.com/projects/github%2Fphyter1%2Ftts-cli)
 
 </div>
 
