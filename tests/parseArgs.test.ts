@@ -119,4 +119,11 @@ describe("parseArgs", () => {
 		]);
 		expect(args.outputFile).toBe("save.mp3");
 	});
+
+	it("should handle flag followed by another flag (no value)", () => {
+		const args = parseArgs(["Hello", "--voice", "--rate", "+20%"]);
+		expect(args.text).toBe("Hello");
+		expect(args.voice).toBe("en-US-AriaNeural"); // Should use default when next arg is flag
+		expect(args.rate).toBe("+20%");
+	});
 });

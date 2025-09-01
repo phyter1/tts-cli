@@ -195,9 +195,33 @@ export async function synthesizeSpeech(
 	rate: string,
 	pitch: string,
 ): Promise<Blob> {
-	const tts = new EdgeTTS(text, voice, { rate, pitch });
-	const result = await tts.synthesize();
-	return result.audio;
+	// Handle extremely long text by truncating or splitting
+	const MAX_TEXT_LENGTH = 10000; // Microsoft TTS has practical limits
+
+	if (text.length === 0) {
+		// Handle empty text
+		text = " "; // Use single space for empty text to avoid TTS errors
+	}
+
+	if (text.length > MAX_TEXT_LENGTH) {
+		// For extremely long text, truncate to prevent timeouts
+		text = text.substring(0, MAX_TEXT_LENGTH);
+		console.warn(
+			`Text truncated to ${MAX_TEXT_LENGTH} characters to prevent timeout`,
+		);
+	}
+
+	try {
+		const tts = new EdgeTTS(text, voice, { rate, pitch });
+		const result = await tts.synthesize();
+		return result.audio;
+	} catch (error) {
+		// Handle TTS errors gracefully
+		if (error instanceof Error) {
+			throw new Error(`TTS synthesis failed: ${error.message}`);
+		}
+		throw new Error("TTS synthesis failed with unknown error");
+	}
 }
 
 export function formatText(text: string, maxLength = 50): string {

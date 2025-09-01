@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { getAudioCommands } from "../src/lib";
+import { getAudioCommands, playAudio } from "../src/lib";
 
 describe("getAudioCommands", () => {
 	it("should return afplay command for macOS", () => {
@@ -42,4 +42,15 @@ describe("getAudioCommands", () => {
 			`powershell -c "(New-Object Media.SoundPlayer 'C:\\temp\\test.mp3').PlaySync()"`,
 		]);
 	});
+});
+
+describe("playAudio", () => {
+	it("should return false for non-existent file", async () => {
+		const result = await playAudio("/tmp/non-existent-file.mp3");
+		expect(result).toBe(false);
+	}, 10000);
+
+	// Note: We can't test successful audio playback in CI without actual audio files
+	// and without disrupting the test environment, but the function is covered
+	// by testing the failure case when all commands fail
 });

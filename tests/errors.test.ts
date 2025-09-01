@@ -58,21 +58,19 @@ describe("Error Handling", () => {
 	}, 10000);
 
 	it("should handle extremely long text", async () => {
-		const veryLongText = "word ".repeat(10000); // 10,000 words
-		try {
-			const audio = await synthesizeSpeech(
-				veryLongText,
-				"en-US-AriaNeural",
-				"+0%",
-				"+0Hz",
-			);
-			expect(audio).toBeInstanceOf(Blob);
-			expect(audio.size).toBeGreaterThan(0);
-		} catch (error) {
-			// If it fails due to length limits, that's also acceptable
-			expect(error).toBeInstanceOf(Error);
-		}
-	}, 30000);
+		const veryLongText = "word ".repeat(10000); // 10,000 words (50,000 chars)
+
+		// Should truncate and process successfully
+		const audio = await synthesizeSpeech(
+			veryLongText,
+			"en-US-AriaNeural",
+			"+0%",
+			"+0Hz",
+		);
+		expect(audio).toBeInstanceOf(Blob);
+		expect(audio.size).toBeGreaterThan(0);
+		expect(audio.type).toBe("audio/mpeg");
+	}, 15000); // Reduced timeout since text is now truncated
 });
 
 describe("CLI Error Handling", () => {

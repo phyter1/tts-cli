@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "bun:test";
 import { existsSync, rmSync } from "node:fs";
 import { $ } from "bun";
-import { synthesizeSpeech } from "../src/lib";
+import { checkSystem, listVoices, synthesizeSpeech } from "../src/lib";
 
 // Check if running in CI environment
 const isCI = process.env.CI === "true" || process.env.GITHUB_ACTIONS === "true";
@@ -200,4 +200,38 @@ describe("CLI Integration Tests", () => {
 			}
 		}
 	}, 10000);
+});
+
+describe("System Functions", () => {
+	it("should check system setup", async () => {
+		const results = await checkSystem();
+		expect(Array.isArray(results)).toBe(true);
+		expect(results.length).toBeGreaterThan(0);
+
+		// Should have at least Bun check
+		expect(results.some((r) => r.includes("Bun"))).toBe(true);
+	}, 15000);
+
+	it("should list voices", async () => {
+		try {
+			const voices = await listVoices();
+			expect(Array.isArray(voices)).toBe(true);
+			expect(voices.length).toBeGreaterThan(0);
+
+			// Each voice should have required properties
+			voices.forEach((voice) => {
+				expect(voice).toHaveProperty("ShortName");
+				expect(voice).toHaveProperty("Gender");
+			});
+		} catch (error) {
+			// In CI environments, network calls might fail
+			if (isCI) {
+				console.log(
+					"listVoices test skipped in CI environment (network issues)",
+				);
+				return;
+			}
+			throw error;
+		}
+	}, 15000);
 });
