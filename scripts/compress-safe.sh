@@ -47,88 +47,14 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     zip_size=$(ls -lh dist/tts-cli.zip | awk '{print $5}')
     echo "✅ Created archive: dist/tts-cli.zip (${zip_size})"
     
-    # Option 4: Create a self-extracting script (maintains permissions)
-    echo "🚀 Creating self-extracting installer..."
-    mkdir -p installer
-    cat > installer/install << 'EOF'
-#!/bin/bash
-echo "Installing TTS CLI..."
-PAYLOAD_LINE=$(awk '/^__PAYLOAD_BELOW__/ {print NR + 1; exit 0; }' $0)
-
-# Extract to temporary directory
-TEMP_DIR=$(mktemp -d)
-cd "$TEMP_DIR"
-tail -n +$PAYLOAD_LINE "$OLDPWD/$0" | tar -xz
-chmod +x tts-cli
-
-# Determine the appropriate bin directory based on OS
-if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux"* ]]; then
-    # Check for common bin directories in order of preference
-    if [ -d "$HOME/.local/bin" ]; then
-        BIN_DIR="$HOME/.local/bin"
-    elif [ -d "$HOME/bin" ]; then
-        BIN_DIR="$HOME/bin"
-    elif [ -d "/usr/local/bin" ] && [ -w "/usr/local/bin" ]; then
-        BIN_DIR="/usr/local/bin"
-    else
-        # Create ~/.local/bin if it doesn't exist
-        BIN_DIR="$HOME/.local/bin"
-        mkdir -p "$BIN_DIR"
-    fi
-elif [[ "$OSTYPE" == "msys"* ]] || [[ "$OSTYPE" == "cygwin"* ]]; then
-    # Windows (Git Bash, Cygwin, etc.)
-    BIN_DIR="$HOME/bin"
-    mkdir -p "$BIN_DIR"
-fi
-
-echo "✅ TTS CLI extracted successfully!"
-echo ""
-
-# Ask if user wants to install to bin folder
-read -p "🤔 Would you like to install tts-cli to $BIN_DIR for global access? (y/N): " -n 1 -r
-echo ""
-
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-    # Copy to bin directory
-    cp tts-cli "$BIN_DIR/tts-cli"
+    # Option 4: Generate platform-specific installers
+    echo "🚀 Generating platform-specific installers..."
+    bash scripts/generate-installers.sh
     
-    # Check if bin directory is in PATH
-    if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
-        echo "⚠️  Note: $BIN_DIR is not in your PATH"
-        echo ""
-        echo "📝 Add it to your PATH by adding this line to your shell config:"
-        if [[ "$SHELL" == *"zsh"* ]]; then
-            echo "    echo 'export PATH=\"$BIN_DIR:\$PATH\"' >> ~/.zshrc"
-            echo "    source ~/.zshrc"
-        elif [[ "$SHELL" == *"bash"* ]]; then
-            echo "    echo 'export PATH=\"$BIN_DIR:\$PATH\"' >> ~/.bashrc"
-            echo "    source ~/.bashrc"
-        else
-            echo "    export PATH=\"$BIN_DIR:\$PATH\""
-        fi
-        echo ""
+    if [ -f "installer/install" ]; then
+        installer_size=$(ls -lh installer/install | awk '{print $5}')
+        echo "✅ Created universal installer: installer/install (${installer_size})"
     fi
-    
-    echo "✅ TTS CLI installed to $BIN_DIR"
-    echo "📝 Usage: tts-cli \"Hello, world!\""
-else
-    # Copy to current directory
-    cp tts-cli "$OLDPWD/"
-    cd "$OLDPWD"
-    echo "✅ TTS CLI installed in current directory as ./tts-cli"
-    echo "📝 Usage: ./tts-cli \"Hello, world!\""
-fi
-
-# Clean up temp directory
-rm -rf "$TEMP_DIR"
-
-exit 0
-__PAYLOAD_BELOW__
-EOF
-    tar -cz -C dist tts-cli >> installer/install
-    chmod +x installer/install
-    installer_size=$(ls -lh installer/install | awk '{print $5}')
-    echo "✅ Created self-extracting installer: installer/install (${installer_size})"
     
     echo ""
     echo "📊 Compression Summary:"
