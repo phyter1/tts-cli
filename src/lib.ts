@@ -23,7 +23,7 @@ export function parseArgs(args: string[]): CLIArgs {
 		if (idx >= 0 && idx + 1 < args.length) {
 			const nextArg = args[idx + 1];
 			// Don't return the next arg if it's another flag
-			if (!nextArg.startsWith("--")) {
+			if (nextArg && !nextArg.startsWith("--")) {
 				return nextArg;
 			}
 		}
@@ -38,7 +38,9 @@ export function parseArgs(args: string[]): CLIArgs {
 		shouldListVoices: args.includes("--list-voices"),
 		rate: getArg("rate") || "+0%",
 		pitch: getArg("pitch") || "+0Hz",
-		showHelp: args.includes("--help") || (!text && !args.includes("--check") && !args.includes("--list-voices")),
+		showHelp:
+			args.includes("--help") ||
+			(!text && !args.includes("--check") && !args.includes("--list-voices")),
 	};
 }
 

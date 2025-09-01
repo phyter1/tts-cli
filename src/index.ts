@@ -12,14 +12,14 @@
 
 import { $ } from "bun";
 import {
-	parseArgs,
-	getHelpText,
 	checkSystem as checkSystemLib,
-	listVoices as listVoicesLib,
+	formatText,
 	formatVoices,
+	getHelpText,
+	listVoices as listVoicesLib,
+	parseArgs,
 	playAudio,
 	synthesizeSpeech,
-	formatText,
 } from "./lib";
 
 // Parse arguments
@@ -56,7 +56,6 @@ async function listVoices() {
 	}
 }
 
-
 // Main execution
 async function main() {
 	// Handle special commands
@@ -87,7 +86,12 @@ async function main() {
 	if (args.pitch !== "+0Hz") console.log(`   Pitch: ${args.pitch}`);
 
 	try {
-		const audio = await synthesizeSpeech(args.text, args.voice, args.rate, args.pitch);
+		const audio = await synthesizeSpeech(
+			args.text,
+			args.voice,
+			args.rate,
+			args.pitch,
+		);
 
 		// Save audio
 		const file = args.outputFile || `/tmp/tts_${Date.now()}.mp3`;
