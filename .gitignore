@@ -1,6 +1,7 @@
 # dependencies (bun install)
 node_modules
-.claude
+# .claude
+.claude-bak
 # output
 out
 dist
