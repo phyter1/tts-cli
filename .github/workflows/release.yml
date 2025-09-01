@@ -1,0 +1,189 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build for ${{ matrix.platform }}-${{ matrix.arch }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          # macOS builds
+          - os: macos-latest
+            platform: darwin
+            arch: arm64
+            build_target: bun-darwin-arm64
+          - os: macos-latest
+            platform: darwin
+            arch: x64
+            build_target: bun-darwin-x64
+          # Linux builds
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+            build_target: bun-linux-x64
+          - os: ubuntu-latest
+            platform: linux
+            arch: arm64
+            build_target: bun-linux-arm64
+          # Windows builds
+          - os: windows-latest
+            platform: windows
+            arch: x64
+            build_target: bun-windows-x64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build executable
+        run: |
+          bun build --compile --minify --bytecode --target=${{ matrix.build_target }} ./src/index.ts --outfile dist/tts-cli${{ matrix.platform == 'windows' && '.exe' || '' }}
+
+      - name: Install UPX (Unix)
+        if: matrix.platform != 'windows'
+        run: |
+          if [[ "${{ matrix.platform }}" == "darwin" ]]; then
+            brew install upx
+          else
+            sudo apt-get update && sudo apt-get install -y upx
+          fi
+
+      - name: Install UPX (Windows)
+        if: matrix.platform == 'windows'
+        run: |
+          choco install upx
+
+      - name: Compress executable
+        run: |
+          upx --best --lzma dist/tts-cli${{ matrix.platform == 'windows' && '.exe' || '' }} || true
+
+      - name: Create archive (Unix)
+        if: matrix.platform != 'windows'
+        run: |
+          cd dist
+          tar -czf ../tts-cli-${{ matrix.platform }}-${{ matrix.arch }}.tar.gz tts-cli
+          cd ..
+
+      - name: Create archive (Windows)
+        if: matrix.platform == 'windows'
+        run: |
+          cd dist
+          Compress-Archive -Path tts-cli.exe -DestinationPath ../tts-cli-${{ matrix.platform }}-${{ matrix.arch }}.zip
+          cd ..
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: tts-cli-${{ matrix.platform }}-${{ matrix.arch }}
+          path: tts-cli-${{ matrix.platform }}-${{ matrix.arch }}.${{ matrix.platform == 'windows' && 'zip' || 'tar.gz' }}
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: Create install script artifact
+        run: |
+          cp scripts/install.sh install.sh
+          chmod +x install.sh
+
+      - name: Get version
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          cat << EOF > release_notes.md
+          # TTS CLI ${{ steps.version.outputs.version }}
+          
+          ## 📥 Installation
+          
+          ### Quick Install (Unix/Linux/macOS)
+          \`\`\`bash
+          curl -L https://github.com/${{ github.repository }}/releases/latest/download/install.sh | bash
+          \`\`\`
+          
+          ### Manual Download
+          Download the appropriate package for your platform below.
+          
+          ## 📦 Downloads
+          
+          | Platform | Architecture | File |
+          |----------|-------------|------|
+          | macOS | Apple Silicon | tts-cli-darwin-arm64.tar.gz |
+          | macOS | Intel | tts-cli-darwin-x64.tar.gz |
+          | Linux | x64 | tts-cli-linux-x64.tar.gz |
+          | Linux | ARM64 | tts-cli-linux-arm64.tar.gz |
+          | Windows | x64 | tts-cli-windows-x64.zip |
+          
+          ## ✨ What's New
+          - High-quality text-to-speech using Microsoft Edge TTS
+          - 200+ voices across 100+ languages
+          - Adjustable speech rate and pitch
+          - Cross-platform support
+          
+          ## 🚀 Usage
+          \`\`\`bash
+          # Basic usage
+          tts-cli "Hello, world!"
+          
+          # Save to file
+          tts-cli "Hello" --save output.mp3
+          
+          # Use different voice
+          tts-cli "Hello" --voice en-GB-SoniaNeural
+          
+          # List available voices
+          tts-cli --list-voices
+          \`\`\`
+          
+          See the [README](https://github.com/${{ github.repository }}) for full documentation.
+          EOF
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: TTS CLI ${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: false
+          files: |
+            artifacts/*/*
+            install.sh

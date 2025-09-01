@@ -56,9 +56,20 @@ async function listVoices() {
 	}
 }
 
+// Show version
+async function showVersion() {
+	const version = "1.0.0"; // This could be read from package.json or version.txt
+	console.log(`tts-cli version ${version}`);
+}
+
 // Main execution
 async function main() {
 	// Handle special commands
+	if (args.shouldShowVersion) {
+		await showVersion();
+		return;
+	}
+
 	if (args.shouldCheck) {
 		await checkSystem();
 		return;

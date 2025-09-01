@@ -11,6 +11,7 @@ export interface CLIArgs {
 	outputFile?: string;
 	shouldCheck: boolean;
 	shouldListVoices: boolean;
+	shouldShowVersion: boolean;
 	rate: string;
 	pitch: string;
 	showHelp: boolean;
@@ -36,11 +37,12 @@ export function parseArgs(args: string[]): CLIArgs {
 		outputFile: getArg("save") || getArg("output"),
 		shouldCheck: args.includes("--check"),
 		shouldListVoices: args.includes("--list-voices"),
+		shouldShowVersion: args.includes("--version") || args.includes("-v"),
 		rate: getArg("rate") || "+0%",
 		pitch: getArg("pitch") || "+0Hz",
 		showHelp:
 			args.includes("--help") ||
-			(!text && !args.includes("--check") && !args.includes("--list-voices")),
+			(!text && !args.includes("--check") && !args.includes("--list-voices") && !args.includes("--version") && !args.includes("-v")),
 	};
 }
 

@@ -13,6 +13,60 @@
 
 A fast Text-to-Speech command-line tool built with Bun that uses Microsoft Edge TTS for high-quality speech synthesis.
 
+<div align="center">
+<h3>
+<a href="#-download">📥 Download Now</a> • 
+<a href="#features">✨ Features</a> • 
+<a href="#usage">📖 Usage</a> • 
+<a href="#development">🛠️ Development</a>
+</h3>
+
+**🚀 Quick Install (macOS/Linux):** `curl -fsSL https://github.com/phyter1/tts-cli/releases/latest/download/install.sh | bash`
+
+**📦 Windows:** [Download Latest Release](https://github.com/phyter1/tts-cli/releases/latest)
+
+</div>
+
+---
+
+## 📥 Download
+
+<div align="center">
+
+### Quick Install - Choose Your Platform
+
+| Platform | Architecture | Download | Size |
+|----------|-------------|----------|------|
+| **macOS** | Apple Silicon (M1/M2/M3) | [⬇️ Download Installer](https://github.com/phyter1/tts-cli/releases/latest/download/tts-cli-darwin-arm64.tar.gz) | ~19MB |
+| **macOS** | Intel | [⬇️ Download Installer](https://github.com/phyter1/tts-cli/releases/latest/download/tts-cli-darwin-x64.tar.gz) | ~19MB |
+| **Linux** | x64 | [⬇️ Download Installer](https://github.com/phyter1/tts-cli/releases/latest/download/tts-cli-linux-x64.tar.gz) | ~19MB |
+| **Linux** | ARM64 | [⬇️ Download Installer](https://github.com/phyter1/tts-cli/releases/latest/download/tts-cli-linux-arm64.tar.gz) | ~19MB |
+| **Windows** | x64 | [⬇️ Download Installer](https://github.com/phyter1/tts-cli/releases/latest/download/tts-cli-windows-x64.zip) | ~19MB |
+
+#### Installation Instructions
+
+**macOS/Linux:**
+```bash
+# Download and extract (replace URL with your platform's download link)
+curl -L https://github.com/phyter1/tts-cli/releases/latest/download/tts-cli-darwin-arm64.tar.gz | tar xz
+# Make executable
+chmod +x tts-cli
+# Move to PATH (optional)
+sudo mv tts-cli /usr/local/bin/
+# Test installation
+tts-cli --help
+```
+
+**Windows:**
+```powershell
+# Download and extract the ZIP file
+# Move tts-cli.exe to a folder in your PATH
+# Or run directly from the extracted folder
+.\tts-cli.exe --help
+```
+
+</div>
+
 ## Features
 
 - 🎙️ High-quality text-to-speech using Microsoft Edge TTS
