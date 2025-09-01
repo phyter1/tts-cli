@@ -3,34 +3,34 @@
 <!-- Badges -->
 <div align="center">
 
-[![Build Status](https://github.com/your-username/tts-cli/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/your-username/tts-cli/actions/workflows/build-and-release.yml)
-[![Security Scan](https://github.com/your-username/tts-cli/actions/workflows/security.yml/badge.svg)](https://github.com/your-username/tts-cli/actions/workflows/security.yml)
-[![Code Quality](https://github.com/your-username/tts-cli/actions/workflows/code-quality.yml/badge.svg)](https://github.com/your-username/tts-cli/actions/workflows/code-quality.yml)
-[![Test Coverage](https://codecov.io/gh/your-username/tts-cli/branch/main/graph/badge.svg)](https://codecov.io/gh/your-username/tts-cli)
-[![License](https://img.shields.io/github/license/your-username/tts-cli)](LICENSE)
-[![GitHub release](https://img.shields.io/github/release/your-username/tts-cli.svg)](https://github.com/your-username/tts-cli/releases)
+[![Build Status](https://github.com/phyter1/tts-cli/actions/workflows/build-and-release.yml/badge.svg)](https://github.com/phyter1/tts-cli/actions/workflows/build-and-release.yml)
+[![Security Scan](https://github.com/phyter1/tts-cli/actions/workflows/security.yml/badge.svg)](https://github.com/phyter1/tts-cli/actions/workflows/security.yml)
+[![Code Quality](https://github.com/phyter1/tts-cli/actions/workflows/code-quality.yml/badge.svg)](https://github.com/phyter1/tts-cli/actions/workflows/code-quality.yml)
+[![Test Coverage](https://codecov.io/gh/phyter1/tts-cli/branch/main/graph/badge.svg)](https://codecov.io/gh/phyter1/tts-cli)
+[![License](https://img.shields.io/github/license/phyter1/tts-cli)](LICENSE)
+[![GitHub release](https://img.shields.io/github/release/phyter1/tts-cli.svg)](https://github.com/phyter1/tts-cli/releases)
 
-[![Platform Support](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-blue)](https://github.com/your-username/tts-cli/releases)
-[![Architecture](https://img.shields.io/badge/arch-x64%20%7C%20arm64-green)](https://github.com/your-username/tts-cli/releases)
+[![Platform Support](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-blue)](https://github.com/phyter1/tts-cli/releases)
+[![Architecture](https://img.shields.io/badge/arch-x64%20%7C%20arm64-green)](https://github.com/phyter1/tts-cli/releases)
 [![Bun Version](https://img.shields.io/badge/bun-%E2%89%A51.2.21-f472b6)](https://bun.sh)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 
 <!-- Security Badges -->
-[![Security Score](https://img.shields.io/ossf-scorecard/github.com/your-username/tts-cli?label=openssf%20scorecard)](https://securityscorecards.dev/viewer/?uri=github.com/your-username/tts-cli)
-[![Vulnerabilities](https://snyk.io/test/github/your-username/tts-cli/badge.svg)](https://snyk.io/test/github/your-username/tts-cli)
-[![Dependencies](https://img.shields.io/librariesio/github/your-username/tts-cli)](https://libraries.io/github/your-username/tts-cli)
-[![FOSSA Status](https://app.fossa.com/api/projects/github%2Fyour-username%2Ftts-cli.svg?type=shield)](https://app.fossa.com/projects/github%2Fyour-username%2Ftts-cli)
+[![Security Score](https://img.shields.io/ossf-scorecard/github.com/phyter1/tts-cli?label=openssf%20scorecard)](https://securityscorecards.dev/viewer/?uri=github.com/phyter1/tts-cli)
+[![Vulnerabilities](https://snyk.io/test/github/phyter1/tts-cli/badge.svg)](https://snyk.io/test/github/phyter1/tts-cli)
+[![Dependencies](https://img.shields.io/librariesio/github/phyter1/tts-cli)](https://libraries.io/github/phyter1/tts-cli)
+[![FOSSA Status](https://app.fossa.com/api/projects/github%2Fphyter1%2Ftts-cli.svg?type=shield)](https://app.fossa.com/projects/github%2Fphyter1%2Ftts-cli)
 
 <!-- Code Quality Badges -->
-[![Maintainability](https://api.codeclimate.com/v1/badges/YOUR_BADGE_ID/maintainability)](https://codeclimate.com/github/your-username/tts-cli/maintainability)
-[![Technical Debt](https://img.shields.io/codeclimate/tech-debt/your-username/tts-cli)](https://codeclimate.com/github/your-username/tts-cli)
+[![Maintainability](https://api.codeclimate.com/v1/badges/YOUR_BADGE_ID/maintainability)](https://codeclimate.com/github/phyter1/tts-cli/maintainability)
+[![Technical Debt](https://img.shields.io/codeclimate/tech-debt/phyter1/tts-cli)](https://codeclimate.com/github/phyter1/tts-cli)
 [![Code Style](https://img.shields.io/badge/code_style-biome-brightgreen.svg)](https://biomejs.dev)
 
 <!-- Community Badges -->
-[![Downloads](https://img.shields.io/github/downloads/your-username/tts-cli/total)](https://github.com/your-username/tts-cli/releases)
-[![Contributors](https://img.shields.io/github/contributors/your-username/tts-cli)](https://github.com/your-username/tts-cli/graphs/contributors)
-[![Issues](https://img.shields.io/github/issues/your-username/tts-cli)](https://github.com/your-username/tts-cli/issues)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/your-username/tts-cli/pulls)
+[![Downloads](https://img.shields.io/github/downloads/phyter1/tts-cli/total)](https://github.com/phyter1/tts-cli/releases)
+[![Contributors](https://img.shields.io/github/contributors/phyter1/tts-cli)](https://github.com/phyter1/tts-cli/graphs/contributors)
+[![Issues](https://img.shields.io/github/issues/phyter1/tts-cli)](https://github.com/phyter1/tts-cli/issues)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/phyter1/tts-cli/pulls)
 
 </div>
 
