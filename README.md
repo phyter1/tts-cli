@@ -36,8 +36,15 @@ bun run build
 # Build and compress (reduces size from ~57MB to ~19MB)
 bun run build:compress
 
-# Full build with size comparison
+# Full build with installer creation
 bun run build:all
+```
+
+### Quick Install (Pre-built)
+
+```bash
+# Run the self-extracting installer
+bash installer/install
 ```
 
 ## Usage
@@ -49,31 +56,34 @@ bun run build:all
 bun run src/index.ts "Hello, world!"
 
 # Run standalone executable
-./dist/tts "Hello, world!"
+./dist/tts-cli "Hello, world!"
+
+# Or if installed globally via installer
+tts-cli "Hello, world!"
 ```
 
 ### Command Options
 
 ```bash
 # Voice selection
-./dist/tts "Hello" --voice en-GB-SoniaNeural
+tts-cli "Hello" --voice en-GB-SoniaNeural
 
 # Adjust speech parameters
-./dist/tts "Fast speech" --rate +30% --pitch +10Hz
-./dist/tts "Slow speech" --rate -20% --pitch -5Hz
+tts-cli "Fast speech" --rate +30% --pitch +10Hz
+tts-cli "Slow speech" --rate -20% --pitch -5Hz
 
 # Save to file instead of playing
-./dist/tts "Save this" --save output.mp3
-./dist/tts "Save this" --output greeting.mp3
+tts-cli "Save this" --save output.mp3
+tts-cli "Save this" --output greeting.mp3
 
 # System diagnostics
-./dist/tts --check
+tts-cli --check
 
 # List all available voices
-./dist/tts --list-voices
+tts-cli --list-voices
 
 # Show help
-./dist/tts --help
+tts-cli --help
 ```
 
 ### Voice Examples
@@ -130,8 +140,8 @@ bun run compress
 bun run build:compress
 
 # Cross-platform builds
-bun build --compile --target=bun-linux-x64 ./src/index.ts --outfile dist/tts-linux
-bun build --compile --target=bun-windows-x64 ./src/index.ts --outfile dist/tts.exe
+bun build --compile --target=bun-linux-x64 ./src/index.ts --outfile dist/tts-cli-linux
+bun build --compile --target=bun-windows-x64 ./src/index.ts --outfile dist/tts-cli.exe
 ```
 
 ## System Check
@@ -139,7 +149,7 @@ bun build --compile --target=bun-windows-x64 ./src/index.ts --outfile dist/tts.e
 Run the built-in system diagnostics to verify your setup:
 
 ```bash
-./dist/tts --check
+tts-cli --check
 ```
 
 This checks:
