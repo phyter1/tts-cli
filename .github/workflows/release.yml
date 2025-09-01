@@ -112,9 +112,25 @@ jobs:
         with:
           path: artifacts
 
-      - name: Create install script artifact
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Generate installer scripts
         run: |
-          cp scripts/install.sh install.sh
+          # Run the build script to generate installers
+          bun run scripts/generate-installers.js || echo "Installer generation script not found, using existing"
+          
+          # Copy the install script
+          if [ -f "installer/install.sh" ]; then
+            cp installer/install.sh install.sh
+          elif [ -f "scripts/install.sh" ]; then
+            cp scripts/install.sh install.sh
+          fi
           chmod +x install.sh
 
       - name: Get version
