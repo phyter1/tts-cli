@@ -10,7 +10,7 @@
 		"compress:unsafe": "bash scripts/compress.sh",
 		"build:compress": "bash scripts/build.sh && bash scripts/compress-safe.sh",
 		"build:unsafe": "bash scripts/build.sh && bash scripts/compress.sh",
-		"build:all": "bash scripts/build.sh && cp dist/tts dist/tts-original && bash scripts/compress-safe.sh"
+		"build:all": "bash scripts/build-all.sh"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.2",

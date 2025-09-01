@@ -18,9 +18,9 @@ fi
 # Step 2: Create backup of uncompressed version
 echo ""
 echo "Step 2/3: Creating backup..."
-if [ -f "dist/tts" ]; then
-    cp dist/tts dist/tts-original
-    echo "✅ Backup created: dist/tts-original"
+if [ -f "dist/tts-cli" ]; then
+    cp dist/tts-cli dist/tts-cli-original
+    echo "✅ Backup created: dist/tts-cli-original"
 else
     echo "❌ No executable to backup!"
     exit 1
@@ -40,12 +40,12 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 echo "📊 Build Summary:"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Executables:"
-ls -lh dist/tts* 2>/dev/null | grep -v ".dmg\|.tar.gz\|.zip" | while read -r line; do
+ls -lh dist/tts-cli* 2>/dev/null | grep -v ".dmg\|.tar.gz\|.zip\|.sh" | while read -r line; do
     echo "  $line"
 done
 echo ""
 echo "Distribution Archives:"
-ls -lh dist/*.{dmg,tar.gz,zip} 2>/dev/null | while read -r line; do
+ls -lh dist/tts-cli*.{dmg,tar.gz,zip,sh} 2>/dev/null | while read -r line; do
     echo "  $line"
 done
 
@@ -53,9 +53,10 @@ echo ""
 echo "✅ Build complete!"
 echo ""
 echo "📝 Usage:"
-echo "  Direct: ./dist/tts \"Hello, world!\""
-echo "  From DMG: Mount and drag to Applications"
-echo "  From Archive: Extract and run ./tts \"Hello, world!\""
+echo "  Direct: ./dist/tts-cli \"Hello, world!\""
+echo "  Installer: bash dist/tts-cli-installer.sh"
+echo "  From DMG: Mount and drag to desired location"
+echo "  From Archive: Extract and run ./tts-cli \"Hello, world!\""
 echo ""
 echo "🚀 Ready for distribution!"
 echo ""

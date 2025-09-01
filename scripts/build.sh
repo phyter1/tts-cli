@@ -20,12 +20,12 @@ bun build \
 
 if [ $? -eq 0 ]; then
     # Get file size
-    size=$(ls -lh dist/tts | awk '{print $5}')
+    size=$(ls -lh dist/tts-cli | awk '{print $5}')
     echo "✅ Build successful!"
-    echo "📁 Output: dist/tts (${size})"
+    echo "📁 Output: dist/tts-cli (${size})"
     
     # Make executable (ensure proper permissions)
-    chmod +x dist/tts
+    chmod +x dist/tts-cli
 else
     echo "❌ Build failed!"
     exit 1

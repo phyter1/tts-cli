@@ -6,8 +6,8 @@
 echo "🗜️  Compressing TTS CLI executable..."
 
 # Check if executable exists
-if [ ! -f "dist/tts" ]; then
-    echo "❌ Error: dist/tts not found!"
+if [ ! -f "dist/tts-cli" ]; then
+    echo "❌ Error: dist/tts-cli not found!"
     echo "💡 Run 'bun run build' first to create the executable"
     exit 1
 fi
@@ -20,7 +20,7 @@ if ! command -v upx >/dev/null 2>&1; then
 fi
 
 # Get original size
-original_size=$(ls -lh dist/tts | awk '{print $5}')
+original_size=$(ls -lh dist/tts-cli | awk '{print $5}')
 echo "📏 Original size: ${original_size}"
 
 # Warn about macOS issues
@@ -42,44 +42,44 @@ echo "🔄 Compressing executable..."
 if [[ "$OSTYPE" == "darwin"* ]]; then
     # macOS - try safer compression options
     # Using less aggressive compression to avoid runtime issues
-    upx --force-macos -7 dist/tts 2>/dev/null || \
-    upx --force-macos --best dist/tts 2>/dev/null || \
-    upx --force-macos dist/tts
+    upx --force-macos -7 dist/tts-cli 2>/dev/null || \
+    upx --force-macos --best dist/tts-cli 2>/dev/null || \
+    upx --force-macos dist/tts-cli
     
     if [ $? -eq 0 ]; then
         echo ""
         echo "⚠️  IMPORTANT: The compressed executable may not work on macOS due to security restrictions"
         echo "   If the compressed version doesn't run:"
-        echo "   1. Use the uncompressed version: dist/tts-original"
-        echo "   2. Or clear quarantine: xattr -cr dist/tts"
-        echo "   3. Or sign the binary: codesign --sign - --force dist/tts"
+        echo "   1. Use the uncompressed version: dist/tts-cli-original"
+        echo "   2. Or clear quarantine: xattr -cr dist/tts-cli"
+        echo "   3. Or sign the binary: codesign --sign - --force dist/tts-cli"
     fi
 elif [[ "$OSTYPE" == "msys" ]] || [[ "$OSTYPE" == "cygwin" ]] || [[ "$OSTYPE" == "win32" ]]; then
     # Windows
-    upx --best --no-lzma dist/tts.exe
+    upx --best --no-lzma dist/tts-cli.exe
 else
     # Linux and other Unix-like systems
-    upx --best --no-lzma dist/tts
+    upx --best --no-lzma dist/tts-cli
 fi
 
 if [ $? -eq 0 ]; then
     # Get compressed size
-    compressed_size=$(ls -lh dist/tts | awk '{print $5}')
+    compressed_size=$(ls -lh dist/tts-cli | awk '{print $5}')
     echo "✅ Compression completed!"
     echo "📊 Size reduction: ${original_size} → ${compressed_size}"
     
     # Test if compressed executable works
     echo ""
     echo "🧪 Testing compressed executable..."
-    if timeout 2 ./dist/tts --help >/dev/null 2>&1; then
+    if timeout 2 ./dist/tts-cli --help >/dev/null 2>&1; then
         echo "✅ Compressed executable appears to work!"
     else
         echo "❌ Compressed executable doesn't run properly!"
-        echo "💡 Use the uncompressed version: dist/tts-original"
-        echo "💡 Or try fixing with: xattr -cr dist/tts && codesign --sign - --force dist/tts"
+        echo "💡 Use the uncompressed version: dist/tts-cli-original"
+        echo "💡 Or try fixing with: xattr -cr dist/tts-cli && codesign --sign - --force dist/tts-cli"
     fi
 else
     echo "❌ Compression failed!"
-    echo "💡 The uncompressed version is still available: dist/tts"
+    echo "💡 The uncompressed version is still available: dist/tts-cli"
     exit 1
 fi
