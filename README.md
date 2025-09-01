@@ -4,7 +4,8 @@
 <div align="center">
 
 [![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
-[![Platform Support](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-blue)](https://github.com/phyter1/tts-cli)
+[![GitHub Release](https://img.shields.io/github/v/release/phyter1/tts-cli)](https://github.com/phyter1/tts-cli/releases)
+[![Platform Support](https://img.shields.io/badge/platform-macOS%20%7C%20Linux%20%7C%20Windows-blue)](https://github.com/phyter1/tts-cli/releases)
 [![Bun Version](https://img.shields.io/badge/bun-%E2%89%A51.2.21-f472b6)](https://bun.sh)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 
@@ -18,18 +19,61 @@ A fast Text-to-Speech command-line tool built with Bun that uses Microsoft Edge 
 
 <div align="center">
 <h3>
-<a href="#installation">📥 Installation</a> • 
+<a href="#-download">📥 Download Now</a> • 
 <a href="#features">✨ Features</a> • 
 <a href="#usage">📖 Usage</a> • 
 <a href="#development">🛠️ Development</a>
 </h3>
 
-**🚀 Build from Source:** See [Installation](#installation) instructions below
+**🚀 Quick Install (macOS/Linux):** `curl -fsSL https://github.com/phyter1/tts-cli/releases/download/v1.0.0/install.sh | bash`
+
+**📦 Windows:** [Download Latest Release](https://github.com/phyter1/tts-cli/releases/latest)
 
 </div>
 
 ---
 
+## 📥 Download
+
+<div align="center">
+
+### Quick Install - Choose Your Platform
+
+| Platform | Architecture | Download | Size |
+|----------|-------------|----------|------|
+| **macOS** | Apple Silicon (M1/M2/M3) | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-darwin-arm64.tar.gz) | ~22MB |
+| **macOS** | Intel | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-darwin-x64.tar.gz) | ~24MB |
+| **Linux** | x64 | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-linux-x64.tar.gz) | ~38MB |
+| **Linux** | ARM64 | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-linux-arm64.tar.gz) | ~36MB |
+| **Windows** | x64 | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-windows-x64.zip) | ~40MB |
+
+#### Installation Instructions
+
+**macOS/Linux:**
+```bash
+# Quick install (recommended)
+curl -fsSL https://github.com/phyter1/tts-cli/releases/download/v1.0.0/install.sh | bash
+
+# Or manual install - Download and extract (replace URL with your platform's download link)
+curl -L https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-darwin-arm64.tar.gz | tar xz
+# Make executable
+chmod +x tts-cli
+# Move to PATH (optional)
+sudo mv tts-cli /usr/local/bin/
+# Test installation
+tts-cli --help
+```
+
+**Windows:**
+```powershell
+# Download the ZIP file from the link above
+# Extract the ZIP file
+# Move tts-cli.exe to a folder in your PATH
+# Or run directly from the extracted folder
+.\tts-cli.exe --help
+```
+
+</div>
 
 ## Features
 
