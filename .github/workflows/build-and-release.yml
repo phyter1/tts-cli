@@ -1,0 +1,478 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'package.json'
+      - 'bun.lockb'
+      - 'scripts/**'
+      - '.github/workflows/build-and-release.yml'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Run tests
+        run: bun test
+
+      - name: Run test coverage
+        run: bun test --coverage
+
+  build-matrix:
+    needs: test  # Only build if tests pass
+    name: Build ${{ matrix.os }} ${{ matrix.arch }}
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      matrix:
+        include:
+          # macOS builds
+          - os: darwin
+            arch: x64
+            runner: macos-13  # Intel Mac
+            target: bun-darwin-x64
+            output: tts-cli-darwin-x64
+            
+          - os: darwin
+            arch: arm64
+            runner: macos-14  # M1 Mac
+            target: bun-darwin-arm64
+            output: tts-cli-darwin-arm64
+            
+          # Linux builds
+          - os: linux
+            arch: x64
+            runner: ubuntu-latest
+            target: bun-linux-x64
+            output: tts-cli-linux-x64
+            
+          - os: linux
+            arch: arm64
+            runner: ubuntu-latest
+            target: bun-linux-arm64
+            output: tts-cli-linux-arm64
+            
+          # Windows builds
+          - os: windows
+            arch: x64
+            runner: windows-latest
+            target: bun-windows-x64
+            output: tts-cli-windows-x64.exe
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build for ${{ matrix.os }}-${{ matrix.arch }}
+        run: |
+          bun build \
+            --compile \
+            --minify \
+            --bytecode \
+            --target=${{ matrix.target }} \
+            --define NODE_ENV='"production"' \
+            ./src/index.ts \
+            --outfile dist/${{ matrix.output }}
+
+      - name: Make executable (Unix)
+        if: matrix.os != 'windows'
+        run: chmod +x dist/${{ matrix.output }}
+
+      - name: Create archive (Unix)
+        if: matrix.os != 'windows'
+        run: |
+          mkdir -p archive-temp
+          cp dist/${{ matrix.output }} archive-temp/tts-cli
+          chmod +x archive-temp/tts-cli
+          
+          cat > archive-temp/README.txt << EOF
+          TTS CLI - Text-to-Speech Command Line Tool
+          Platform: ${{ matrix.os }} (${{ matrix.arch }})
+          
+          Installation:
+          1. Copy tts-cli to a directory in your PATH
+          2. Or run directly: ./tts-cli "Hello, world!"
+          
+          Quick Install:
+            sudo cp tts-cli /usr/local/bin/
+            chmod +x /usr/local/bin/tts-cli
+          
+          Usage:
+            tts-cli --help
+            tts-cli "Your text here"
+            tts-cli --list-voices
+            tts-cli "Hello" --voice en-GB-SoniaNeural
+          EOF
+          
+          tar -czf dist/tts-cli-${{ matrix.os }}-${{ matrix.arch }}.tar.gz -C archive-temp .
+          rm -rf archive-temp
+
+      - name: Create archive (Windows)
+        if: matrix.os == 'windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path archive-temp
+          Copy-Item dist/${{ matrix.output }} archive-temp/tts-cli.exe
+          
+          @"
+          TTS CLI - Text-to-Speech Command Line Tool
+          Platform: ${{ matrix.os }} (${{ matrix.arch }})
+          
+          Installation:
+          1. Copy tts-cli.exe to C:\Windows\System32
+          2. Or add the current directory to your PATH
+          3. Or run directly: .\tts-cli.exe "Hello, world!"
+          
+          Usage:
+            tts-cli --help
+            tts-cli "Your text here"
+            tts-cli --list-voices
+            tts-cli "Hello" --voice en-GB-SoniaNeural
+          "@ | Out-File -FilePath archive-temp/README.txt
+          
+          Compress-Archive -Path archive-temp/* -DestinationPath dist/tts-cli-${{ matrix.os }}-${{ matrix.arch }}.zip
+          Remove-Item -Recurse -Force archive-temp
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.os }}-${{ matrix.arch }}
+          path: |
+            dist/${{ matrix.output }}
+            dist/tts-cli-${{ matrix.os }}-${{ matrix.arch }}.*
+
+  create-installers:
+    name: Create Installers and Commit
+    needs: build-matrix
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Organize binaries
+        run: |
+          mkdir -p dist
+          
+          # Move all binaries to dist/
+          for artifact in artifacts/build-*/; do
+            cp -r $artifact/* dist/ 2>/dev/null || true
+          done
+          
+          # Make executables executable
+          chmod +x dist/tts-cli-* 2>/dev/null || true
+          
+          ls -la dist/
+
+      - name: Create native binary for installer generation
+        run: |
+          # Build a native Linux binary for the current runner to generate installers
+          bun build \
+            --compile \
+            --minify \
+            --bytecode \
+            --define NODE_ENV='"production"' \
+            ./src/index.ts \
+            --outfile dist/tts-cli
+          chmod +x dist/tts-cli
+
+      - name: Generate installers
+        run: |
+          # Create installer directory
+          mkdir -p installer
+          
+          # Generate Unix/Linux/macOS installer
+          cat > installer/install.sh << 'INSTALLER_EOF'
+          #!/bin/bash
+          set -e
+          
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "     TTS CLI Installer"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          
+          # Detect OS and architecture
+          OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+          ARCH=$(uname -m)
+          
+          # Map architecture names
+          case "$ARCH" in
+              x86_64) ARCH="x64" ;;
+              aarch64|arm64) ARCH="arm64" ;;
+              *) echo "Unsupported architecture: $ARCH"; exit 1 ;;
+          esac
+          
+          # Map OS names
+          case "$OS" in
+              linux) OS="linux" ;;
+              darwin) OS="darwin" ;;
+              *) echo "Unsupported OS: $OS"; exit 1 ;;
+          esac
+          
+          echo "🖥️  Detected: $OS-$ARCH"
+          
+          # Download URL base (update with your GitHub repo)
+          GITHUB_REPO="your-username/tts-cli"
+          DOWNLOAD_URL="https://github.com/$GITHUB_REPO/releases/latest/download/tts-cli-$OS-$ARCH.tar.gz"
+          
+          # Alternative: Download from raw GitHub (if storing in repo)
+          # DOWNLOAD_URL="https://raw.githubusercontent.com/$GITHUB_REPO/main/dist/tts-cli-$OS-$ARCH.tar.gz"
+          
+          # Create temp directory
+          TEMP_DIR=$(mktemp -d)
+          cd "$TEMP_DIR"
+          
+          echo "📦 Downloading TTS CLI..."
+          curl -L -o tts-cli.tar.gz "$DOWNLOAD_URL" || wget -O tts-cli.tar.gz "$DOWNLOAD_URL"
+          
+          echo "📦 Extracting..."
+          tar -xzf tts-cli.tar.gz
+          chmod +x tts-cli
+          
+          # Determine installation directory
+          if [ -w "/usr/local/bin" ]; then
+              INSTALL_DIR="/usr/local/bin"
+          else
+              INSTALL_DIR="$HOME/.local/bin"
+              mkdir -p "$INSTALL_DIR"
+          fi
+          
+          echo "📦 Installing to $INSTALL_DIR..."
+          cp tts-cli "$INSTALL_DIR/tts-cli"
+          
+          # Check PATH
+          if [[ ":$PATH:" != *":$INSTALL_DIR:"* ]]; then
+              echo ""
+              echo "⚠️  Add $INSTALL_DIR to your PATH:"
+              echo "    export PATH=\"$INSTALL_DIR:\$PATH\""
+          fi
+          
+          # Cleanup
+          cd ..
+          rm -rf "$TEMP_DIR"
+          
+          echo ""
+          echo "✅ TTS CLI installed successfully!"
+          echo "📝 Usage: tts-cli \"Hello, world!\""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          INSTALLER_EOF
+          
+          chmod +x installer/install.sh
+          
+          # Generate Windows PowerShell installer
+          cat > installer/install.ps1 << 'INSTALLER_EOF'
+          # TTS CLI Windows Installer
+          $ErrorActionPreference = "Stop"
+          
+          Write-Host ""
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+          Write-Host "     TTS CLI Installer (Windows)" -ForegroundColor Cyan
+          Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+          Write-Host ""
+          
+          # Download URL (update with your GitHub repo)
+          $githubRepo = "your-username/tts-cli"
+          $downloadUrl = "https://github.com/$githubRepo/releases/latest/download/tts-cli-windows-x64.zip"
+          
+          # Alternative: Download from raw GitHub
+          # $downloadUrl = "https://raw.githubusercontent.com/$githubRepo/main/dist/tts-cli-windows-x64.zip"
+          
+          try {
+              $tempDir = New-TemporaryFile | %{ rm $_; mkdir $_ }
+              
+              Write-Host "📦 Downloading TTS CLI..." -ForegroundColor Yellow
+              $zipPath = Join-Path $tempDir "tts-cli.zip"
+              Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath
+              
+              Write-Host "📦 Extracting..." -ForegroundColor Yellow
+              Expand-Archive -Path $zipPath -DestinationPath $tempDir -Force
+              
+              # Install to user's local app data
+              $installDir = "$env:LOCALAPPDATA\Microsoft\WindowsApps"
+              if (-not (Test-Path $installDir)) {
+                  $installDir = "$env:USERPROFILE\bin"
+                  New-Item -ItemType Directory -Path $installDir -Force | Out-Null
+              }
+              
+              Write-Host "📦 Installing to $installDir..." -ForegroundColor Yellow
+              Copy-Item -Path "$tempDir\tts-cli.exe" -Destination "$installDir\tts-cli.exe" -Force
+              
+              # Check if in PATH
+              if ($env:Path -notlike "*$installDir*") {
+                  Write-Host ""
+                  Write-Host "⚠️  Adding to PATH..." -ForegroundColor Yellow
+                  [Environment]::SetEnvironmentVariable("Path", "$env:Path;$installDir", [EnvironmentVariableTarget]::User)
+                  $env:Path += ";$installDir"
+              }
+              
+              # Cleanup
+              Remove-Item -Recurse -Force $tempDir
+              
+              Write-Host ""
+              Write-Host "✅ TTS CLI installed successfully!" -ForegroundColor Green
+              Write-Host "📝 Usage: tts-cli `"Hello, world!`"" -ForegroundColor Cyan
+              Write-Host "   Restart your terminal for PATH changes to take effect." -ForegroundColor Yellow
+              Write-Host "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" -ForegroundColor Cyan
+              
+          } catch {
+              Write-Host "❌ Installation failed: $_" -ForegroundColor Red
+              exit 1
+          }
+          INSTALLER_EOF
+          
+          # Create universal installer
+          cat > installer/install << 'EOF'
+          #!/bin/sh
+          # Universal installer - detects OS and runs appropriate installer
+          
+          echo "TTS CLI Universal Installer"
+          echo ""
+          
+          if [ "$(uname)" = "Darwin" ] || [ "$(uname)" = "Linux" ]; then
+              curl -fsSL https://raw.githubusercontent.com/your-username/tts-cli/main/installer/install.sh | bash
+          elif [ -n "$COMSPEC" ]; then
+              powershell -ExecutionPolicy Bypass -Command "iwr -useb https://raw.githubusercontent.com/your-username/tts-cli/main/installer/install.ps1 | iex"
+          else
+              echo "Unsupported OS. Please download manually from GitHub releases."
+              exit 1
+          fi
+          EOF
+          
+          chmod +x installer/install
+          
+          echo "✅ Installers created successfully"
+          ls -la installer/
+
+      - name: Create macOS universal binary
+        run: |
+          if [ -f "dist/tts-cli-darwin-x64" ] && [ -f "dist/tts-cli-darwin-arm64" ]; then
+            mkdir -p universal-temp
+            cp dist/tts-cli-darwin-x64 universal-temp/tts-cli-x64
+            cp dist/tts-cli-darwin-arm64 universal-temp/tts-cli-arm64
+            
+            # Create launcher script
+            cat > universal-temp/tts-cli << 'EOF'
+          #!/bin/bash
+          ARCH=$(uname -m)
+          SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+          
+          if [ "$ARCH" = "x86_64" ]; then
+              exec "$SCRIPT_DIR/tts-cli-x64" "$@"
+          elif [ "$ARCH" = "arm64" ] || [ "$ARCH" = "aarch64" ]; then
+              exec "$SCRIPT_DIR/tts-cli-arm64" "$@"
+          else
+              echo "Unsupported architecture: $ARCH"
+              exit 1
+          fi
+          EOF
+            chmod +x universal-temp/tts-cli
+            
+            tar -czf dist/tts-cli-darwin-universal.tar.gz -C universal-temp .
+            rm -rf universal-temp
+            echo "✅ Created macOS universal package"
+          fi
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+
+      - name: Commit and push installers
+        run: |
+          # Add installer files
+          git add installer/
+          git add dist/*.tar.gz dist/*.zip 2>/dev/null || true
+          
+          # Check if there are changes
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update installers and binaries [skip ci]
+            
+            - Generated installers for all platforms
+            - Built binaries for darwin-x64, darwin-arm64, linux-x64, linux-arm64, windows-x64
+            - Created universal macOS package
+            
+            [skip ci]"
+            
+            git push origin main
+            echo "✅ Pushed installers to main branch"
+          fi
+
+      - name: Create Release (Optional)
+        if: github.event_name == 'push' && contains(github.event.head_commit.message, '[release]')
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v${{ github.run_number }}
+          name: Release v${{ github.run_number }}
+          body: |
+            ## TTS CLI Release
+            
+            ### 📦 Downloads
+            
+            #### macOS
+            - [Universal (Intel + Apple Silicon)](https://github.com/${{ github.repository }}/releases/download/v${{ github.run_number }}/tts-cli-darwin-universal.tar.gz)
+            - [Intel (x64)](https://github.com/${{ github.repository }}/releases/download/v${{ github.run_number }}/tts-cli-darwin-x64.tar.gz)
+            - [Apple Silicon (arm64)](https://github.com/${{ github.repository }}/releases/download/v${{ github.run_number }}/tts-cli-darwin-arm64.tar.gz)
+            
+            #### Linux
+            - [x64](https://github.com/${{ github.repository }}/releases/download/v${{ github.run_number }}/tts-cli-linux-x64.tar.gz)
+            - [arm64](https://github.com/${{ github.repository }}/releases/download/v${{ github.run_number }}/tts-cli-linux-arm64.tar.gz)
+            
+            #### Windows
+            - [x64](https://github.com/${{ github.repository }}/releases/download/v${{ github.run_number }}/tts-cli-windows-x64.zip)
+            
+            ### 🚀 Quick Install
+            
+            ```bash
+            # Unix/Linux/macOS
+            curl -fsSL https://raw.githubusercontent.com/${{ github.repository }}/main/installer/install.sh | bash
+            
+            # Windows PowerShell
+            iwr -useb https://raw.githubusercontent.com/${{ github.repository }}/main/installer/install.ps1 | iex
+            ```
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+          draft: false
+          prerelease: false
