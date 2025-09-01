@@ -9,12 +9,14 @@
 [![Bun Version](https://img.shields.io/badge/bun-%E2%89%A51.2.21-f472b6)](https://bun.sh)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 
-<!-- Security Badges -->
-[![Security Scan](https://github.com/phyter1/tts-cli/actions/workflows/security.yml/badge.svg)](https://github.com/phyter1/tts-cli/actions/workflows/security.yml)
-[![CodeQL](https://github.com/phyter1/tts-cli/actions/workflows/security.yml/badge.svg?event=push&job=sast)](https://github.com/phyter1/tts-cli/security/code-scanning)
+<!-- Code Quality Badges -->
+[![Build Status](https://github.com/phyter1/tts-cli/workflows/Code%20Quality/badge.svg)](https://github.com/phyter1/tts-cli/actions/workflows/code-quality.yml)
+[![Security Workflow](https://github.com/phyter1/tts-cli/workflows/Security%20%26%20Vulnerability%20Scan/badge.svg)](https://github.com/phyter1/tts-cli/actions/workflows/security.yml)
+
+<!-- Security & Compliance Badges -->
+[![CodeQL](https://github.com/phyter1/tts-cli/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/phyter1/tts-cli/security/code-scanning)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/phyter1/tts-cli/badge)](https://securityscorecards.dev/viewer/?uri=github.com/phyter1/tts-cli)
-[![Snyk Vulnerabilities](https://snyk.io/test/github/phyter1/tts-cli/badge.svg)](https://snyk.io/test/github/phyter1/tts-cli)
-[![FOSSA Status](https://app.fossa.com/api/projects/github%2Fphyter1%2Ftts-cli.svg?type=shield)](https://app.fossa.com/projects/github%2Fphyter1%2Ftts-cli)
+[![Dependencies](https://img.shields.io/librariesio/github/phyter1/tts-cli)](https://libraries.io/github/phyter1/tts-cli)
 
 </div>
 
@@ -278,3 +280,5 @@ All security scans run automatically on every push and are available in the [Sec
 ## License
 
 This project was created using `bun init` and is built with [Bun](https://bun.sh), a fast all-in-one JavaScript runtime.
+
+Copyright (c) 2023 Ryan Lowe
