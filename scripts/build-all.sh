@@ -45,16 +45,20 @@ ls -lh dist/tts-cli* 2>/dev/null | grep -v ".dmg\|.tar.gz\|.zip\|.sh" | while re
 done
 echo ""
 echo "Distribution Archives:"
-ls -lh dist/tts-cli*.{dmg,tar.gz,zip,sh} 2>/dev/null | while read -r line; do
+ls -lh dist/tts-cli*.{dmg,tar.gz,zip} 2>/dev/null | while read -r line; do
     echo "  $line"
 done
+if [ -f "installer/install" ]; then
+    installer_line=$(ls -lh installer/install)
+    echo "  $installer_line"
+fi
 
 echo ""
 echo "✅ Build complete!"
 echo ""
 echo "📝 Usage:"
 echo "  Direct: ./dist/tts-cli \"Hello, world!\""
-echo "  Installer: bash dist/tts-cli-installer.sh"
+echo "  Installer: bash installer/install"
 echo "  From DMG: Mount and drag to desired location"
 echo "  From Archive: Extract and run ./tts-cli \"Hello, world!\""
 echo ""

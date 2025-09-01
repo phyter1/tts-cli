@@ -49,8 +49,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     
     # Option 4: Create a self-extracting script (maintains permissions)
     echo "🚀 Creating self-extracting installer..."
-    mkdir -p dist/installer
-    cat > dist/installer/install << 'EOF'
+    mkdir -p installer
+    cat > installer/install << 'EOF'
 #!/bin/bash
 echo "Installing TTS CLI..."
 PAYLOAD_LINE=$(awk '/^__PAYLOAD_BELOW__/ {print NR + 1; exit 0; }' $0)
@@ -90,7 +90,7 @@ echo ""
 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     # Copy to bin directory
-    cp tts-cli "$BIN_DIR/tts" 2>/dev/null || cp tts-cli "$BIN_DIR/tts-cli"
+    cp tts-cli "$BIN_DIR/tts-cli"
     
     # Check if bin directory is in PATH
     if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
@@ -110,7 +110,7 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     fi
     
     echo "✅ TTS CLI installed to $BIN_DIR"
-    echo "📝 Usage: tts \"Hello, world!\""
+    echo "📝 Usage: tts-cli \"Hello, world!\""
 else
     # Copy to current directory
     cp tts-cli "$OLDPWD/"
@@ -125,10 +125,10 @@ rm -rf "$TEMP_DIR"
 exit 0
 __PAYLOAD_BELOW__
 EOF
-    tar -cz -C dist tts-cli >> dist/installer/install
-    chmod +x dist/installer/install
-    installer_size=$(ls -lh dist/installer/install | awk '{print $5}')
-    echo "✅ Created self-extracting installer: dist/installer/install (${installer_size})"
+    tar -cz -C dist tts-cli >> installer/install
+    chmod +x installer/install
+    installer_size=$(ls -lh installer/install | awk '{print $5}')
+    echo "✅ Created self-extracting installer: installer/install (${installer_size})"
     
     echo ""
     echo "📊 Compression Summary:"
@@ -148,12 +148,12 @@ elif [[ "$OSTYPE" == "linux"* ]]; then
     
     # Linux usually works fine with UPX
     if command -v upx >/dev/null 2>&1; then
-        upx --best --no-lzma dist/tts
-        compressed_size=$(ls -lh dist/tts | awk '{print $5}')
+        upx --best --no-lzma dist/tts-cli
+        compressed_size=$(ls -lh dist/tts-cli | awk '{print $5}')
         echo "✅ UPX compression successful: ${original_size} → ${compressed_size}"
     else
         # Fallback to tar.gz
-        tar -czf dist/tts-cli.tar.gz -C dist tts
+        tar -czf dist/tts-cli.tar.gz -C dist tts-cli
         tar_size=$(ls -lh dist/tts-cli.tar.gz | awk '{print $5}')
         echo "✅ Created archive: dist/tts-cli.tar.gz (${tar_size})"
     fi
@@ -163,12 +163,12 @@ else
     
     # Windows usually works with UPX
     if command -v upx >/dev/null 2>&1; then
-        upx --best --no-lzma dist/tts.exe
-        compressed_size=$(ls -lh dist/tts.exe | awk '{print $5}')
+        upx --best --no-lzma dist/tts-cli.exe
+        compressed_size=$(ls -lh dist/tts-cli.exe | awk '{print $5}')
         echo "✅ UPX compression successful: ${original_size} → ${compressed_size}"
     else
         # Fallback to zip
-        zip -9 dist/tts-cli.zip dist/tts.exe
+        zip -9 dist/tts-cli.zip dist/tts-cli.exe
         zip_size=$(ls -lh dist/tts-cli.zip | awk '{print $5}')
         echo "✅ Created archive: dist/tts-cli.zip (${zip_size})"
     fi
