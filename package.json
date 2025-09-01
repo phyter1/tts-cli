@@ -4,13 +4,19 @@
 	"type": "module",
 	"private": true,
 	"scripts": {
+		"test": "bun test",
+		"test:watch": "bun test --watch",
+		"test:coverage": "bun test --coverage",
 		"install-tools": "bash scripts/install-tools.sh",
 		"build": "bash scripts/build.sh",
+		"build:cross": "bash scripts/build-cross-platform.sh",
 		"compress": "bash scripts/compress-safe.sh",
 		"compress:unsafe": "bash scripts/compress.sh",
 		"build:compress": "bash scripts/build.sh && bash scripts/compress-safe.sh",
 		"build:unsafe": "bash scripts/build.sh && bash scripts/compress.sh",
-		"build:all": "bash scripts/build-all.sh"
+		"build:all": "bash scripts/build-all.sh",
+		"installers": "bash scripts/generate-installers.sh",
+		"release": "bash scripts/build-cross-platform.sh && bash scripts/generate-installers.sh"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.2",
