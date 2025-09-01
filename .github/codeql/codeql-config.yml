@@ -1,0 +1,50 @@
+name: "TTS CLI CodeQL config"
+
+# Paths to scan
+paths:
+  - src
+  - tests
+  - scripts
+
+# Paths to ignore
+paths-ignore:
+  - node_modules
+  - dist
+  - coverage
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+
+# Query filters
+query-filters:
+  - exclude:
+      id: js/unused-local-variable
+  - exclude:
+      id: js/missing-rate-limiting
+
+# Additional queries to run
+queries:
+  - uses: security-and-quality
+  - uses: security-extended
+  - uses: security-experimental
+
+# Language-specific configuration
+languages:
+  javascript:
+    index:
+      # Include TypeScript files
+      include:
+        - "**/*.ts"
+        - "**/*.tsx"
+        - "**/*.js"
+        - "**/*.jsx"
+      # Exclude generated files
+      exclude:
+        - "**/dist/**"
+        - "**/build/**"
+        - "**/coverage/**"
+
+# Trap caching (speeds up analysis)
+trap-caching: true
+
+# Increase timeout for large codebases
+timeout: 1800
