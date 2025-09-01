@@ -1,0 +1,106 @@
+# Lefthook configuration for TTS CLI
+# Runs quality checks before commits and pushes
+
+# Git hooks configuration
+pre-commit:
+  parallel: true
+  commands:
+    lint:
+      glob: "*.{ts,tsx,js,jsx}"
+      run: bunx biome check --no-errors-on-unmatched {staged_files}
+      stage_fixed: true
+      
+    format:
+      glob: "*.{ts,tsx,js,jsx,json,md}"
+      run: bunx biome format --write {staged_files}
+      stage_fixed: true
+
+    typecheck:
+      run: bunx tsc --noEmit
+      skip:
+        - merge
+        - rebase
+
+pre-push:
+  parallel: false
+  commands:
+    lint-all:
+      run: bunx biome check src/ tests/
+      fail_text: "❌ Linting failed. Run 'bunx biome check --write src/ tests/' to fix."
+      
+    typecheck:
+      run: bunx tsc --noEmit
+      fail_text: "❌ TypeScript errors found. Please fix type errors before pushing."
+      
+    test:
+      run: bun test
+      fail_text: "❌ Tests failed. Please fix failing tests before pushing."
+      
+    test-coverage:
+      run: |
+        echo "Running test coverage..."
+        output=$(bun test --coverage 2>&1)
+        coverage=$(echo "$output" | grep "All files" | awk -F'|' '{print $3}' | tr -d ' ')
+        if [ -z "$coverage" ]; then
+          echo "⚠️  Could not determine test coverage"
+          exit 0
+        fi
+        echo "📊 Test coverage: ${coverage}"
+        coverage_int=$(echo "$coverage" | cut -d. -f1)
+        if [ "$coverage_int" -lt 50 ]; then
+          echo "❌ Test coverage is below 50% (current: ${coverage})"
+          echo "Please improve test coverage before pushing."
+          exit 1
+        fi
+        echo "✅ Test coverage is acceptable (${coverage})"
+      fail_text: "❌ Test coverage is too low."
+
+    bundle-size:
+      run: |
+        echo "Checking bundle size..."
+        if [ -f dist/tts ]; then
+          size=$(du -sh dist/tts | cut -f1)
+          echo "📦 Bundle size: $size"
+          size_mb=$(du -m dist/tts | cut -f1)
+          if [ "$size_mb" -gt 100 ]; then
+            echo "⚠️  Warning: Bundle size is large ($size). Consider optimizing."
+          else
+            echo "✅ Bundle size is acceptable ($size)"
+          fi
+        else
+          echo "⚠️  No bundle found. Run 'bun run build' to create one."
+        fi
+      skip:
+        - merge
+        - rebase
+
+commit-msg:
+  commands:
+    conventional:
+      run: |
+        # Check if commit message follows conventional commits format
+        pattern="^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,}"
+        if ! grep -qE "$pattern" "{1}"; then
+          echo "❌ Commit message must follow Conventional Commits format!"
+          echo ""
+          echo "Format: <type>(<scope>): <subject>"
+          echo ""
+          echo "Types:"
+          echo "  feat:     New feature"
+          echo "  fix:      Bug fix"
+          echo "  docs:     Documentation only"
+          echo "  style:    Code style changes"
+          echo "  refactor: Code refactoring"
+          echo "  test:     Test changes"
+          echo "  chore:    Build process or auxiliary tool changes"
+          echo "  perf:     Performance improvements"
+          echo "  ci:       CI configuration changes"
+          echo "  build:    Build system changes"
+          echo "  revert:   Revert previous commit"
+          echo ""
+          echo "Example: feat(cli): add support for new voice options"
+          exit 1
+        fi
+
+# Color output
+colors: true

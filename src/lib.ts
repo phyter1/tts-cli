@@ -42,7 +42,11 @@ export function parseArgs(args: string[]): CLIArgs {
 		pitch: getArg("pitch") || "+0Hz",
 		showHelp:
 			args.includes("--help") ||
-			(!text && !args.includes("--check") && !args.includes("--list-voices") && !args.includes("--version") && !args.includes("-v")),
+			(!text &&
+				!args.includes("--check") &&
+				!args.includes("--list-voices") &&
+				!args.includes("--version") &&
+				!args.includes("-v")),
 	};
 }
 

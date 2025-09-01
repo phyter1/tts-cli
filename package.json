@@ -7,6 +7,11 @@
 		"test": "bun test",
 		"test:watch": "bun test --watch",
 		"test:coverage": "bun test --coverage",
+		"lint": "bunx biome check src/ tests/",
+		"lint:fix": "bunx biome check --write src/ tests/",
+		"typecheck": "bunx tsc --noEmit",
+		"quality:check": "bun run lint && bun run typecheck && bun run test",
+		"prepare": "lefthook install",
 		"install-tools": "bash scripts/install-tools.sh",
 		"build": "bash scripts/build.sh",
 		"build:cross": "bash scripts/build-cross-platform.sh",
@@ -20,7 +25,8 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.2.2",
-		"@types/bun": "latest"
+		"@types/bun": "latest",
+		"lefthook": "^1.12.3"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
