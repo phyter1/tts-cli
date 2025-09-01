@@ -14,7 +14,6 @@
 [![Security Workflow](https://github.com/phyter1/tts-cli/workflows/Security%20%26%20Vulnerability%20Scan/badge.svg)](https://github.com/phyter1/tts-cli/actions/workflows/security.yml)
 
 <!-- Security & Compliance Badges -->
-[![CodeQL](https://github.com/phyter1/tts-cli/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/phyter1/tts-cli/security/code-scanning)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/phyter1/tts-cli/badge)](https://securityscorecards.dev/viewer/?uri=github.com/phyter1/tts-cli)
 [![Dependencies](https://img.shields.io/librariesio/github/phyter1/tts-cli)](https://libraries.io/github/phyter1/tts-cli)
 [![Snyk Vulnerabilities](https://snyk.io/test/github/phyter1/tts-cli/badge.svg)](https://snyk.io/test/github/phyter1/tts-cli)
