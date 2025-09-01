@@ -5,12 +5,7 @@ import { synthesizeSpeech } from "../src/lib";
 describe("Error Handling", () => {
 	it("should throw error for invalid voice", async () => {
 		try {
-			await synthesizeSpeech(
-				"Test",
-				"invalid-voice-name",
-				"+0%",
-				"+0Hz",
-			);
+			await synthesizeSpeech("Test", "invalid-voice-name", "+0%", "+0Hz");
 			expect.unreachable("Should have thrown an error");
 		} catch (error) {
 			expect(error).toBeInstanceOf(Error);
@@ -21,12 +16,7 @@ describe("Error Handling", () => {
 	}, 10000);
 
 	it("should handle empty text gracefully", async () => {
-		const audio = await synthesizeSpeech(
-			"",
-			"en-US-AriaNeural",
-			"+0%",
-			"+0Hz",
-		);
+		const audio = await synthesizeSpeech("", "en-US-AriaNeural", "+0%", "+0Hz");
 		expect(audio).toBeInstanceOf(Blob);
 		// Empty text might still generate a small audio file
 		expect(audio.size).toBeGreaterThanOrEqual(0);
@@ -85,7 +75,8 @@ describe("Error Handling", () => {
 describe("CLI Error Handling", () => {
 	it("should handle invalid voice from CLI", async () => {
 		try {
-			const result = await $`bun run src/index.ts "Test" --voice invalid-voice --save /tmp/error_test.mp3`.text();
+			const result =
+				await $`bun run src/index.ts "Test" --voice invalid-voice --save /tmp/error_test.mp3`.text();
 			expect(result).toContain("Error:");
 			expect(result.toLowerCase()).toContain("voice");
 		} catch (error) {
@@ -95,14 +86,16 @@ describe("CLI Error Handling", () => {
 	}, 10000);
 
 	it("should handle missing argument value", async () => {
-		const result = await $`bun run src/index.ts "Test" --voice --save /tmp/test_missing_arg.mp3`.text();
+		const result =
+			await $`bun run src/index.ts "Test" --voice --save /tmp/test_missing_arg.mp3`.text();
 		// Should use default voice when --voice has no value
 		expect(result).toContain("Voice: en-US-AriaNeural");
 	}, 10000);
 
 	it("should handle invalid save path", async () => {
 		try {
-			const result = await $`bun run src/index.ts "Test" --save /invalid/path/that/does/not/exist/file.mp3`.text();
+			const result =
+				await $`bun run src/index.ts "Test" --save /invalid/path/that/does/not/exist/file.mp3`.text();
 			// Might either create the directory or fail
 			expect(result).toBeDefined();
 		} catch (error) {
@@ -111,7 +104,8 @@ describe("CLI Error Handling", () => {
 	}, 10000);
 
 	it("should handle multiple text arguments correctly", async () => {
-		const result = await $`bun run src/index.ts "First text" "Second text" --save /tmp/multi_test.mp3`.text();
+		const result =
+			await $`bun run src/index.ts "First text" "Second text" --save /tmp/multi_test.mp3`.text();
 		// Should only use the first non-flag argument
 		expect(result).toContain("First text");
 		expect(result).not.toContain("Second text");
@@ -120,7 +114,8 @@ describe("CLI Error Handling", () => {
 	it("should handle special characters in save path", async () => {
 		const specialPath = "/tmp/test file with spaces.mp3";
 		try {
-			const result = await $`bun run src/index.ts "Test" --save "${specialPath}"`.text();
+			const result =
+				await $`bun run src/index.ts "Test" --save "${specialPath}"`.text();
 			expect(result).toContain("Saved to:");
 			// Clean up
 			await $`rm -f "${specialPath}"`.quiet();

@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { afterEach, describe, expect, it } from "bun:test";
+import { existsSync, rmSync } from "node:fs";
 import { $ } from "bun";
 import { synthesizeSpeech } from "../src/lib";
-import { rmSync, existsSync } from "node:fs";
 
 describe("TTS Integration Tests", () => {
 	const testFile = "/tmp/test_tts_output.mp3";
@@ -59,7 +59,8 @@ describe("TTS Integration Tests", () => {
 	}, 10000);
 
 	it("should handle long text", async () => {
-		const longText = "This is a longer piece of text that should be synthesized. ".repeat(5);
+		const longText =
+			"This is a longer piece of text that should be synthesized. ".repeat(5);
 		const audio = await synthesizeSpeech(
 			longText,
 			"en-US-AriaNeural",
@@ -79,7 +80,7 @@ describe("TTS Integration Tests", () => {
 		);
 		await Bun.write(testFile, await audio.arrayBuffer());
 		expect(existsSync(testFile)).toBe(true);
-		
+
 		// Verify file size
 		const file = Bun.file(testFile);
 		expect(file.size).toBeGreaterThan(0);
@@ -137,7 +138,8 @@ describe("CLI Integration Tests", () => {
 	it("should synthesize speech from command line", async () => {
 		const outputFile = "/tmp/cli_test_output.mp3";
 		try {
-			const result = await $`bun run src/index.ts "Hello from CLI" --save ${outputFile}`.text();
+			const result =
+				await $`bun run src/index.ts "Hello from CLI" --save ${outputFile}`.text();
 			expect(result).toContain("Converting:");
 			expect(result).toContain("Generated");
 			expect(result).toContain("Saved to:");
@@ -152,7 +154,8 @@ describe("CLI Integration Tests", () => {
 	it("should handle custom voice from command line", async () => {
 		const outputFile = "/tmp/cli_voice_test.mp3";
 		try {
-			const result = await $`bun run src/index.ts "Test voice" --voice en-GB-SoniaNeural --save ${outputFile}`.text();
+			const result =
+				await $`bun run src/index.ts "Test voice" --voice en-GB-SoniaNeural --save ${outputFile}`.text();
 			expect(result).toContain("Voice: en-GB-SoniaNeural");
 			expect(existsSync(outputFile)).toBe(true);
 		} finally {
@@ -165,7 +168,8 @@ describe("CLI Integration Tests", () => {
 	it("should handle rate and pitch options", async () => {
 		const outputFile = "/tmp/cli_rate_pitch_test.mp3";
 		try {
-			const result = await $`bun run src/index.ts "Test rate and pitch" --rate +30% --pitch +10Hz --save ${outputFile}`.text();
+			const result =
+				await $`bun run src/index.ts "Test rate and pitch" --rate +30% --pitch +10Hz --save ${outputFile}`.text();
 			expect(result).toContain("Rate: +30%");
 			expect(result).toContain("Pitch: +10Hz");
 			expect(existsSync(outputFile)).toBe(true);

@@ -16,7 +16,7 @@ describe("formatText", () => {
 	it("should use default max length of 50", () => {
 		const longText = "a".repeat(60);
 		const result = formatText(longText);
-		expect(result).toBe("a".repeat(50) + "...");
+		expect(result).toBe(`${"a".repeat(50)}...`);
 	});
 
 	it("should handle empty string", () => {
@@ -34,31 +34,50 @@ describe("formatText", () => {
 describe("formatVoices", () => {
 	const mockVoices = [
 		{
+			Name: "Microsoft Server Speech Text to Speech Voice (en-US, AriaNeural)",
 			ShortName: "en-US-AriaNeural",
-			Gender: "Female",
+			Gender: "Female" as "Female",
 			Locale: "en-US",
 			LocaleName: "English (United States)",
 			FriendlyName: "Microsoft Aria Online (Natural) - English (United States)",
-			Status: "General",
-			VoiceTag: { ContentCategories: ["General"], VoicePersonalities: ["Friendly"] },
+			Status: "GA" as "GA",
+			SuggestedCodec:
+				"audio-24khz-48kbitrate-mono-mp3" as "audio-24khz-48kbitrate-mono-mp3",
+			VoiceTag: {
+				ContentCategories: ["General" as const],
+				VoicePersonalities: ["Friendly" as const],
+			},
 		},
 		{
+			Name: "Microsoft Server Speech Text to Speech Voice (en-GB, SoniaNeural)",
 			ShortName: "en-GB-SoniaNeural",
-			Gender: "Female",
+			Gender: "Female" as "Female",
 			Locale: "en-GB",
 			LocaleName: "English (United Kingdom)",
-			FriendlyName: "Microsoft Sonia Online (Natural) - English (United Kingdom)",
-			Status: "General",
-			VoiceTag: { ContentCategories: ["General"], VoicePersonalities: ["Friendly"] },
+			FriendlyName:
+				"Microsoft Sonia Online (Natural) - English (United Kingdom)",
+			Status: "GA" as "GA",
+			SuggestedCodec:
+				"audio-24khz-48kbitrate-mono-mp3" as "audio-24khz-48kbitrate-mono-mp3",
+			VoiceTag: {
+				ContentCategories: ["General" as const],
+				VoicePersonalities: ["Friendly" as const],
+			},
 		},
 		{
+			Name: "Microsoft Server Speech Text to Speech Voice (fr-FR, DeniseNeural)",
 			ShortName: "fr-FR-DeniseNeural",
-			Gender: "Female",
+			Gender: "Female" as "Female",
 			Locale: "fr-FR",
 			LocaleName: "French (France)",
 			FriendlyName: "Microsoft Denise Online (Natural) - French (France)",
-			Status: "General",
-			VoiceTag: { ContentCategories: ["General"], VoicePersonalities: ["Friendly"] },
+			Status: "GA" as "GA",
+			SuggestedCodec:
+				"audio-24khz-48kbitrate-mono-mp3" as "audio-24khz-48kbitrate-mono-mp3",
+			VoiceTag: {
+				ContentCategories: ["General" as const],
+				VoicePersonalities: ["Friendly" as const],
+			},
 		},
 	];
 
@@ -90,12 +109,19 @@ describe("formatVoices", () => {
 	it("should handle voices without locale", () => {
 		const voicesWithoutLocale = [
 			{
+				Name: "Microsoft Server Speech Text to Speech Voice (test-voice)",
 				ShortName: "test-voice",
-				Gender: "Male",
+				Gender: "Male" as "Male",
+				Locale: "",
 				LocaleName: "Test",
 				FriendlyName: "Test Voice",
-				Status: "General",
-				VoiceTag: { ContentCategories: ["General"], VoicePersonalities: ["Friendly"] },
+				Status: "GA" as "GA",
+				SuggestedCodec:
+					"audio-24khz-48kbitrate-mono-mp3" as "audio-24khz-48kbitrate-mono-mp3",
+				VoiceTag: {
+					ContentCategories: ["General" as const],
+					VoicePersonalities: ["Friendly" as const],
+				},
 			},
 		];
 		const result = formatVoices(voicesWithoutLocale);
@@ -104,19 +130,25 @@ describe("formatVoices", () => {
 
 	it("should limit displayed voices to 5 per language", () => {
 		const manyVoices = Array.from({ length: 10 }, (_, i) => ({
+			Name: `Microsoft Server Speech Text to Speech Voice (en-US, Voice${i})`,
 			ShortName: `en-US-Voice${i}`,
-			Gender: "Female",
+			Gender: "Female" as "Female",
 			Locale: "en-US",
 			LocaleName: "English (United States)",
 			FriendlyName: `Voice ${i}`,
-			Status: "General",
-			VoiceTag: { ContentCategories: ["General"], VoicePersonalities: ["Friendly"] },
+			Status: "GA" as "GA",
+			SuggestedCodec:
+				"audio-24khz-48kbitrate-mono-mp3" as "audio-24khz-48kbitrate-mono-mp3",
+			VoiceTag: {
+				ContentCategories: ["General" as const],
+				VoicePersonalities: ["Friendly" as const],
+			},
 		}));
 		const result = formatVoices(manyVoices);
 		const voiceLines = result.filter(
 			(line) => line.startsWith("  ") && !line.includes("..."),
 		);
 		expect(voiceLines.length).toBe(5);
-		expect(result.some(line => line.includes("... and 5 more"))).toBe(true);
+		expect(result.some((line) => line.includes("... and 5 more"))).toBe(true);
 	});
 });
