@@ -9,6 +9,13 @@
 [![Bun Version](https://img.shields.io/badge/bun-%E2%89%A51.2.21-f472b6)](https://bun.sh)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0%2B-blue)](https://www.typescriptlang.org/)
 
+<!-- Security Badges -->
+[![Security Scan](https://github.com/phyter1/tts-cli/actions/workflows/security.yml/badge.svg)](https://github.com/phyter1/tts-cli/actions/workflows/security.yml)
+[![CodeQL](https://github.com/phyter1/tts-cli/actions/workflows/security.yml/badge.svg?event=push&job=sast)](https://github.com/phyter1/tts-cli/security/code-scanning)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/phyter1/tts-cli/badge)](https://securityscorecards.dev/viewer/?uri=github.com/phyter1/tts-cli)
+[![Snyk Vulnerabilities](https://snyk.io/test/github/phyter1/tts-cli/badge.svg)](https://snyk.io/test/github/phyter1/tts-cli)
+[![FOSSA Status](https://app.fossa.com/api/projects/github%2Fphyter1%2Ftts-cli.svg?type=shield)](https://app.fossa.com/projects/github%2Fphyter1%2Ftts-cli)
+
 </div>
 
 A fast Text-to-Speech command-line tool built with Bun that uses Microsoft Edge TTS for high-quality speech synthesis.
@@ -247,6 +254,26 @@ This checks:
 - **Dependencies**: `edge-tts-universal` for TTS functionality
 - **Runtime**: Bun with native TypeScript support
 - **File Size**: ~19MB (compressed) or ~57MB (uncompressed) standalone executable
+
+## 🔒 Security
+
+This project maintains high security standards through comprehensive automated scanning:
+
+### Security Measures
+- **🔍 Static Analysis**: CodeQL and Semgrep scan for security vulnerabilities
+- **🕵️ Secret Scanning**: TruffleHog and Gitleaks detect exposed credentials
+- **📦 Dependency Scanning**: Snyk, OWASP, and npm audit check for vulnerable dependencies
+- **🛡️ Container Security**: Trivy scans for container vulnerabilities
+- **📋 License Compliance**: FOSSA ensures license compatibility
+- **📊 Security Scorecard**: OpenSSF evaluates overall security posture
+
+### Automated Workflows
+- Daily security scans via GitHub Actions
+- Pre-push hooks prevent insecure code commits
+- SARIF integration with GitHub Security tab
+- Real-time vulnerability notifications
+
+All security scans run automatically on every push and are available in the [Security tab](https://github.com/phyter1/tts-cli/security).
 
 ## License
 
