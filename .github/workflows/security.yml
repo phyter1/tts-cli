@@ -127,6 +127,29 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
 
+  # FOSSA License Scanning
+  fossa-scan:
+    name: FOSSA License Scan
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run FOSSA Scan
+        uses: fossas/fossa-action@main
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
+          branch: ${{ github.ref_name }}
+        continue-on-error: true
+
+      - name: Run FOSSA Test
+        uses: fossas/fossa-action@main
+        with:
+          api-key: ${{ secrets.FOSSA_API_KEY }}
+          run-tests: true
+        continue-on-error: true
+
   # Container scanning (if using Docker)
   trivy-scan:
     name: Trivy Security Scan
@@ -216,7 +239,7 @@ jobs:
   # Summary report
   security-summary:
     name: Security Summary
-    needs: [dependency-scan, sast, license-check, secret-scan, trivy-scan, owasp-check, scorecard]
+    needs: [dependency-scan, sast, license-check, secret-scan, trivy-scan, owasp-check, scorecard, fossa-scan]
     runs-on: ubuntu-latest
     if: always()
     steps:
@@ -233,5 +256,6 @@ jobs:
           echo "| Trivy Scan | ${{ needs.trivy-scan.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| OWASP Check | ${{ needs.owasp-check.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Security Scorecard | ${{ needs.scorecard.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| FOSSA License Scan | ${{ needs.fossa-scan.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "✅ All security scans completed. Check individual job logs for details." >> $GITHUB_STEP_SUMMARY

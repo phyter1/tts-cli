@@ -1,0 +1,74 @@
+version: "2"
+
+checks:
+  argument-count:
+    enabled: true
+    config:
+      threshold: 4
+  complex-logic:
+    enabled: true
+    config:
+      threshold: 4
+  file-lines:
+    enabled: true
+    config:
+      threshold: 250
+  method-complexity:
+    enabled: true
+    config:
+      threshold: 5
+  method-count:
+    enabled: true
+    config:
+      threshold: 20
+  method-lines:
+    enabled: true
+    config:
+      threshold: 25
+  nested-control-flow:
+    enabled: true
+    config:
+      threshold: 4
+  return-statements:
+    enabled: true
+    config:
+      threshold: 4
+  similar-code:
+    enabled: true
+    config:
+      threshold: 50
+  identical-code:
+    enabled: true
+    config:
+      threshold: 100
+
+plugins:
+  eslint:
+    enabled: false  # Using Biome instead
+  fixme:
+    enabled: true
+  nodesecurity:
+    enabled: true
+  shellcheck:
+    enabled: true
+  markdownlint:
+    enabled: true
+
+exclude_patterns:
+  - "tests/"
+  - "spec/"
+  - "**/vendor/"
+  - "**/node_modules/"
+  - "dist/"
+  - "coverage/"
+  - "**/*.d.ts"
+  - "**/*.test.ts"
+  - "**/*.spec.ts"
+  - "scripts/"
+  - ".github/"
+
+ratings:
+  paths:
+    - "src/**"
+    - "**.ts"
+    - "**.js"

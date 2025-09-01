@@ -73,6 +73,15 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
 
+      - name: Upload coverage to CodeClimate
+        uses: paambaati/codeclimate-action@v5.0.0
+        env:
+          CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
+        with:
+          coverageLocations: |
+            ${{github.workspace}}/coverage/lcov.info:lcov
+        continue-on-error: true
+
   bundle-size:
     name: Bundle Size Check
     runs-on: ubuntu-latest

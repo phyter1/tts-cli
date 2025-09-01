@@ -1,0 +1,31 @@
+# FOSSA Configuration
+# https://docs.fossa.com/docs/configuration-file
+
+version: 3
+
+project:
+  id: tts-cli
+  name: tts-cli
+  team: phyter1
+  policy: default
+
+telemetry:
+  enabled: false
+
+paths:
+  exclude:
+    - ./tests/
+    - ./dist/
+    - ./coverage/
+    - ./.github/
+    - ./scripts/
+
+analyze:
+  modules:
+    - name: tts-cli
+      type: npm
+      target: .
+      path: .
+      options:
+        production: true
+        dev: false
