@@ -4,6 +4,7 @@ import {
 	listVoices as listVoicesUniversal,
 	type Voice,
 } from "edge-tts-universal";
+import { getCachedAudio, saveToCache } from "./cache";
 
 export interface CLIArgs {
 	text?: string;
@@ -15,6 +16,9 @@ export interface CLIArgs {
 	rate: string;
 	pitch: string;
 	showHelp: boolean;
+	noCache: boolean;
+	clearCache: boolean;
+	cacheStats: boolean;
 }
 
 export function parseArgs(args: string[]): CLIArgs {
@@ -40,13 +44,18 @@ export function parseArgs(args: string[]): CLIArgs {
 		shouldShowVersion: args.includes("--version") || args.includes("-v"),
 		rate: getArg("rate") || "+0%",
 		pitch: getArg("pitch") || "+0Hz",
+		noCache: args.includes("--no-cache"),
+		clearCache: args.includes("--clear-cache"),
+		cacheStats: args.includes("--cache-stats"),
 		showHelp:
 			args.includes("--help") ||
 			(!text &&
 				!args.includes("--check") &&
 				!args.includes("--list-voices") &&
 				!args.includes("--version") &&
-				!args.includes("-v")),
+				!args.includes("-v") &&
+				!args.includes("--clear-cache") &&
+				!args.includes("--cache-stats")),
 	};
 }
 
@@ -64,12 +73,17 @@ Options:
   --save FILE      Save to file instead of playing
   --check          Check system setup
   --list-voices    List all available voices
+  --no-cache       Bypass cache for fresh synthesis
+  --clear-cache    Clear all cached audio files
+  --cache-stats    Display cache statistics
 
 Examples:
   bun tts-bun.ts "Hello world"
   bun tts-bun.ts "Hello" --voice en-GB-SoniaNeural
   bun tts-bun.ts "Fast" --rate +30% --pitch +10Hz
   bun tts-bun.ts "Save me" --save output.mp3
+  bun tts-bun.ts "Hello" --no-cache
+  bun tts-bun.ts --cache-stats
 `;
 }
 
@@ -194,6 +208,7 @@ export async function synthesizeSpeech(
 	voice: string,
 	rate: string,
 	pitch: string,
+	useCache = true,
 ): Promise<Blob> {
 	// Handle extremely long text by truncating or splitting
 	const MAX_TEXT_LENGTH = 10000; // Microsoft TTS has practical limits
@@ -211,10 +226,27 @@ export async function synthesizeSpeech(
 		);
 	}
 
+	// Check cache first if enabled
+	if (useCache) {
+		const cachedAudio = await getCachedAudio(text, voice, rate, pitch);
+		if (cachedAudio) {
+			console.log("🎯 Using cached audio");
+			return cachedAudio;
+		}
+	}
+
 	try {
 		const tts = new EdgeTTS(text, voice, { rate, pitch });
 		const result = await tts.synthesize();
-		return result.audio;
+		const audioBlob = result.audio;
+
+		// Save to cache if enabled
+		if (useCache) {
+			await saveToCache(text, voice, rate, pitch, audioBlob);
+			console.log("💾 Saved to cache");
+		}
+
+		return audioBlob;
 	} catch (error) {
 		// Handle TTS errors gracefully
 		if (error instanceof Error) {
