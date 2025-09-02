@@ -60,6 +60,9 @@ export function parseArgs(args: string[]): CLIArgs {
 }
 
 export function getHelpText(): string {
+	const homeDir = process.env.HOME || process.env.USERPROFILE || "~";
+	const cacheLocation = `${homeDir}/.cache/tts-cli/`;
+
 	return `
 🎙️  Bun-Native TTS (using Bun's $ utility)
 
@@ -76,6 +79,10 @@ Options:
   --no-cache       Bypass cache for fresh synthesis
   --clear-cache    Clear all cached audio files
   --cache-stats    Display cache statistics
+
+Cache:
+  Location: ${cacheLocation}
+  Cached audio files are stored using SHA-256 hashes of text+voice+settings
 
 Examples:
   bun tts-bun.ts "Hello world"

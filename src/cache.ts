@@ -85,13 +85,16 @@ export async function clearCache(): Promise<number> {
 		// Count files before deletion
 		const filesBefore =
 			await $`find ${CACHE_DIR} -name "*.mp3" -type f | wc -l`.text();
-		const count = Number.parseInt(filesBefore.trim(), 10);
+		const count = Number.parseInt(filesBefore.trim(), 10) || 0;
 
-		// Delete files
-		await $`find ${CACHE_DIR} -name "*.mp3" -type f -delete`.quiet();
+		// Delete files only if there are files to delete
+		if (count > 0) {
+			await $`find ${CACHE_DIR} -name "*.mp3" -type f -delete`.quiet();
+		}
 
 		return count;
-	} catch {
+	} catch (error) {
+		console.warn(`Failed to clear cache: ${error}`);
 		return 0;
 	}
 }
@@ -102,13 +105,22 @@ export async function getCacheStats(): Promise<CacheStats> {
 
 		const fileCount =
 			await $`find ${CACHE_DIR} -name "*.mp3" -type f | wc -l`.text();
-		const totalFiles = Number.parseInt(fileCount.trim(), 10);
+		const totalFiles = Number.parseInt(fileCount.trim(), 10) || 0;
 
 		let totalSizeBytes = 0;
 		if (totalFiles > 0) {
-			const sizeOutput =
-				await $`find ${CACHE_DIR} -name "*.mp3" -type f -exec stat -f%z {} + | awk '{sum+=$1} END {print sum}'`.text();
-			totalSizeBytes = Number.parseInt(sizeOutput.trim(), 10) || 0;
+			// Cross-platform stat command - need to handle differently
+			if (process.platform === "darwin") {
+				const sizeOutput =
+					await $`find ${CACHE_DIR} -name "*.mp3" -type f -exec stat -f%z {} + | awk '{sum+=$1} END {print sum}'`.text();
+				const parsedSize = Number.parseInt(sizeOutput.trim(), 10);
+				totalSizeBytes = Number.isNaN(parsedSize) ? 0 : parsedSize;
+			} else {
+				const sizeOutput =
+					await $`find ${CACHE_DIR} -name "*.mp3" -type f -exec stat -c%s {} + | awk '{sum+=$1} END {print sum}'`.text();
+				const parsedSize = Number.parseInt(sizeOutput.trim(), 10);
+				totalSizeBytes = Number.isNaN(parsedSize) ? 0 : parsedSize;
+			}
 		}
 
 		return {
@@ -117,7 +129,8 @@ export async function getCacheStats(): Promise<CacheStats> {
 			totalSizeMB: totalSizeBytes / (1024 * 1024),
 			cacheDir: CACHE_DIR,
 		};
-	} catch {
+	} catch (error) {
+		console.warn(`Failed to get cache stats: ${error}`);
 		return {
 			totalFiles: 0,
 			totalSizeBytes: 0,
