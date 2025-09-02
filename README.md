@@ -39,38 +39,34 @@ A fast Text-to-Speech command-line tool built with Bun that uses Microsoft Edge 
 
 ### Quick Install - Choose Your Platform
 
-| Platform | Architecture | Download | Size |
-|----------|-------------|----------|------|
-| **macOS** | Apple Silicon (M1/M2/M3) | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-darwin-arm64.tar.gz) | ~22MB |
-| **macOS** | Intel | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-darwin-x64.tar.gz) | ~24MB |
-| **Linux** | x64 | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-linux-x64.tar.gz) | ~38MB |
-| **Linux** | ARM64 | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-linux-arm64.tar.gz) | ~36MB |
-| **Windows** | x64 | [⬇️ Download](https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-windows-x64.zip) | ~40MB |
+| Platform | Architecture | One-Click Installer | Size |
+|----------|-------------|---------------------|------|
+| **macOS** | Apple Silicon (M1/M2/M3) | [⬇️ Install Now](https://github.com/phyter1/tts-cli/releases/latest/download/install-macos-arm64.sh) | ~80MB |
+| **macOS** | Intel | [⬇️ Install Now](https://github.com/phyter1/tts-cli/releases/latest/download/install-macos-x64.sh) | ~86MB |
+| **Linux** | x64 | [⬇️ Install Now](https://github.com/phyter1/tts-cli/releases/latest/download/install-linux-x64.sh) | ~135MB |
+| **Linux** | ARM64 | [⬇️ Install Now](https://github.com/phyter1/tts-cli/releases/latest/download/install-linux-arm64.sh) | ~125MB |
+| **Windows** | x64 | [⬇️ Install Now](https://github.com/phyter1/tts-cli/releases/latest/download/install-windows.ps1) | ~153MB |
 
 #### Installation Instructions
 
 **macOS/Linux:**
 ```bash
-# Quick install (recommended)
-curl -fsSL https://github.com/phyter1/tts-cli/releases/download/v1.0.0/install.sh | bash
+# Universal installer (auto-detects platform and architecture)
+curl -fsSL https://github.com/phyter1/tts-cli/releases/latest/download/install.sh | bash
 
-# Or manual install - Download and extract (replace URL with your platform's download link)
-curl -L https://github.com/phyter1/tts-cli/releases/download/v1.0.0/tts-cli-darwin-arm64.tar.gz | tar xz
-# Make executable
-chmod +x tts-cli
-# Move to PATH (optional)
-sudo mv tts-cli /usr/local/bin/
-# Test installation
-tts-cli --help
+# Or use the platform-specific installer from the table above:
+# Example for macOS Apple Silicon:
+curl -fsSL https://github.com/phyter1/tts-cli/releases/latest/download/install-macos-arm64.sh | bash
 ```
 
 **Windows:**
 ```powershell
-# Download the ZIP file from the link above
-# Extract the ZIP file
-# Move tts-cli.exe to a folder in your PATH
-# Or run directly from the extracted folder
-.\tts-cli.exe --help
+# Download and run the installer
+Invoke-WebRequest -Uri "https://github.com/phyter1/tts-cli/releases/latest/download/install-windows.ps1" -OutFile "install.ps1"
+powershell -ExecutionPolicy Bypass -File install.ps1
+
+# Or run directly:
+iwr -useb https://github.com/phyter1/tts-cli/releases/latest/download/install-windows.ps1 | iex
 ```
 
 </div>
