@@ -71,7 +71,7 @@ jobs:
           fail_ci_if_error: false
 
       - name: Upload coverage to CodeClimate
-        uses: paambaati/codeclimate-action@v5.0.0
+        uses: paambaati/codeclimate-action@v9.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CODECLIMATE_TOKEN }}
         with:
