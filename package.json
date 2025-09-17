@@ -25,7 +25,7 @@
 		"release": "bash scripts/build-cross-platform.sh && bash scripts/generate-installers.sh"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.2.3",
+		"@biomejs/biome": "2.2.4",
 		"@types/bun": "latest",
 		"lefthook": "^1.12.3"
 	},
