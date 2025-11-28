@@ -11,6 +11,7 @@
  */
 
 import { $ } from "bun";
+import { clearCache, getCacheStats } from "./cache";
 import {
 	checkSystem as checkSystemLib,
 	formatText,
@@ -62,6 +63,22 @@ async function showVersion() {
 	console.log(`tts-cli version ${version}`);
 }
 
+// Clear cache
+async function clearCacheCommand() {
+	console.log("🗑️  Clearing cache...");
+	const cleared = await clearCache();
+	console.log(`✅ Cache cleared (removed ${cleared} files)`);
+}
+
+// Show cache stats
+async function showCacheStats() {
+	console.log("📊 Cache Statistics\n");
+	const stats = await getCacheStats();
+	console.log(`📁 Cache directory: ${stats.cacheDir}`);
+	console.log(`📄 Cached files: ${stats.totalFiles}`);
+	console.log(`💾 Total size: ${stats.totalSizeMB.toFixed(2)} MB`);
+}
+
 // Main execution
 async function main() {
 	// Handle special commands
@@ -80,6 +97,16 @@ async function main() {
 		return;
 	}
 
+	if (args.clearCache) {
+		await clearCacheCommand();
+		return;
+	}
+
+	if (args.cacheStats) {
+		await showCacheStats();
+		return;
+	}
+
 	if (args.showHelp) {
 		await showHelp();
 		return;
@@ -95,6 +122,7 @@ async function main() {
 	console.log(`   Voice: ${args.voice}`);
 	if (args.rate !== "+0%") console.log(`   Rate: ${args.rate}`);
 	if (args.pitch !== "+0Hz") console.log(`   Pitch: ${args.pitch}`);
+	if (args.noCache) console.log(`   Cache: Disabled`);
 
 	try {
 		const audio = await synthesizeSpeech(
@@ -102,6 +130,7 @@ async function main() {
 			args.voice,
 			args.rate,
 			args.pitch,
+			!args.noCache,
 		);
 
 		// Save audio
