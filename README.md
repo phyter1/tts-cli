@@ -274,4 +274,4 @@ All security scans run automatically on every push and are available in the [Sec
 
 This project was created using `bun init` and is built with [Bun](https://bun.sh), a fast all-in-one JavaScript runtime.
 
-Copyright (c) 2023 Ryan Lowe
+Copyright (c) 2025 Ryan Lowe
